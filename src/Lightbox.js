@@ -201,6 +201,7 @@ class Lightbox extends Component {
 			onClickImage,
 			showImageCount,
 			showThumbnails,
+      onUpdateCaption
 		} = this.props;
 
 		if (!images || !images.length) return null;
@@ -243,6 +244,7 @@ class Lightbox extends Component {
 					countSeparator={imageCountSeparator}
 					countTotal={images.length}
 					showCount={showImageCount}
+					onUpdateCaption={onUpdateCaption}
 				/>
 			</figure>
 		);
@@ -271,49 +273,51 @@ class Lightbox extends Component {
 }
 
 Lightbox.propTypes = {
-	backdropClosesModal: PropTypes.bool,
-	closeButtonTitle: PropTypes.string,
-	currentImage: PropTypes.number,
-	customControls: PropTypes.arrayOf(PropTypes.node),
-	enableKeyboardInput: PropTypes.bool,
-	imageCountSeparator: PropTypes.string,
-	images: PropTypes.arrayOf(
-		PropTypes.shape({
-			src: PropTypes.string.isRequired,
-			srcset: PropTypes.array,
-			caption: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-			thumbnail: PropTypes.string,
-		})
-	).isRequired,
-	isOpen: PropTypes.bool,
-	leftArrowTitle: PropTypes.string,
-	onClickImage: PropTypes.func,
-	onClickNext: PropTypes.func,
-	onClickPrev: PropTypes.func,
-	onClose: PropTypes.func.isRequired,
-	preloadNextImage: PropTypes.bool,
-	rightArrowTitle: PropTypes.string,
-	showCloseButton: PropTypes.bool,
-	showImageCount: PropTypes.bool,
-	showThumbnails: PropTypes.bool,
-	theme: PropTypes.object,
-	thumbnailOffset: PropTypes.number,
-	width: PropTypes.number,
+  backdropClosesModal: PropTypes.bool,
+  closeButtonTitle: PropTypes.string,
+  currentImage: PropTypes.number,
+  customControls: PropTypes.arrayOf(PropTypes.node),
+  enableKeyboardInput: PropTypes.bool,
+  imageCountSeparator: PropTypes.string,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      src: PropTypes.string.isRequired,
+      srcset: PropTypes.array,
+      caption: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+      thumbnail: PropTypes.string,
+    })
+  ).isRequired,
+  isOpen: PropTypes.bool,
+  leftArrowTitle: PropTypes.string,
+  onClickImage: PropTypes.func,
+  onClickNext: PropTypes.func,
+  onClickPrev: PropTypes.func,
+  onClose: PropTypes.func.isRequired,
+  preloadNextImage: PropTypes.bool,
+  rightArrowTitle: PropTypes.string,
+  showCloseButton: PropTypes.bool,
+  showImageCount: PropTypes.bool,
+  showThumbnails: PropTypes.bool,
+  theme: PropTypes.object,
+  thumbnailOffset: PropTypes.number,
+  width: PropTypes.number,
+  onUpdateCaption: PropTypes.func
 };
 Lightbox.defaultProps = {
 	closeButtonTitle: 'Close (Esc)',
 	currentImage: 0,
 	enableKeyboardInput: true,
 	imageCountSeparator: ' of ',
-	leftArrowTitle: 'Previous (Left arrow key)',
+	leftArrowTitle: 'Previous',
 	onClickShowNextImage: true,
 	preloadNextImage: true,
-	rightArrowTitle: 'Next (Right arrow key)',
+	rightArrowTitle: 'Next',
 	showCloseButton: true,
 	showImageCount: true,
 	theme: {},
 	thumbnailOffset: 2,
 	width: 1024,
+	onUpdateCaption: caption => console.log(caption)
 };
 Lightbox.childContextTypes = {
 	theme: PropTypes.object.isRequired,

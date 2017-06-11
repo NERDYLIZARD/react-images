@@ -4,39 +4,84 @@ import { css, StyleSheet } from 'aphrodite/no-important';
 import defaults from '../theme';
 import { deepMerge } from '../utils';
 
-function Footer ({
-	caption,
-	countCurrent,
-	countSeparator,
-	countTotal,
-	showCount,
-	...props,
-}, {
-	theme,
-}) {
-	if (!caption && !showCount) return null;
+class Footer extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      caption: this.props.caption,
+      editing: false
+    };
+    this.saveCaption = this.saveCaption.bind(this);
+  }
 
-	const classes = StyleSheet.create(deepMerge(defaultStyles, theme));
+  componentWillReceiveProps(nextProps) {
+    if (this.props === nextProps) return;
+    this.setState({
+      editing: false,
+      caption: nextProps.caption
+    });
+  }
 
-	const imageCount = showCount ? (
-		<div className={css(classes.footerCount)}>
-			{countCurrent}
-			{countSeparator}
-			{countTotal}
-		</div>)
-		: <span />;
+  saveCaption() {
+    this.props.onUpdateCaption(this.state.caption);
+    this.setState({ editing: false });
+  }
 
-	return (
-		<div className={css(classes.footer)} {...props}>
-			{caption ? (
-				<figcaption className={css(classes.footerCaption)}>
-					{caption}
-				</figcaption>
-			) : <span />}
-			{imageCount}
-		</div>
-	);
+  renderCaptionForm(classes) {
+    return (
+      <div>
+        <input
+          autoFocus
+          type="text"
+          value={this.state.caption}
+          onChange={(e) => this.setState({ caption: e.target.value })}
+        />
+        <span>
+          <button onClick={this.saveCaption}>Save</button>
+          <button onClick={() => this.setState({ editing: false })}>Cancel</button>
+        </span>
+      </div>
+    );
+  }
+
+  renderImageCount(classes) {
+  	const { showCount, countCurrent, countSeparator, countTotal } = this.props;
+    return showCount ? (
+      <div className={css(classes.footerCount)}>
+        {countCurrent}
+        {countSeparator}
+        {countTotal}
+      </div>)
+      : <span />;
+  }
+
+  render() {
+    const { caption, showCount } = this.props;
+
+    if (!caption && !showCount) return null;
+
+    const classes = StyleSheet.create(deepMerge(defaultStyles, this.context.theme));
+
+    return (
+      <div className={css(classes.footer)} {...this.props}>
+        {caption ? (
+          <figcaption className={css(classes.footerCaption)}>
+            { (!this.state.editing) ?
+              (<div>
+                {caption}
+                <button onClick={() => this.setState({ editing: true })}>Edit</button>
+              </div>) :
+              this.renderCaptionForm(classes)
+            }
+          </figcaption>
+        ) : <span />}
+        {this.renderImageCount(classes)}
+      </div>
+  	);
+  }
+
 }
+
 
 Footer.propTypes = {
 	caption: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),

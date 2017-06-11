@@ -2784,7 +2784,6 @@ var nameShape = exports.nameShape = _propTypes2.default.oneOfType([_propTypes2.d
   appearActive: _propTypes2.default.string
 })]);
 },{"prop-types":undefined,"react":undefined}],40:[function(require,module,exports){
-(function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -2805,7 +2804,7 @@ var nameShape = exports.nameShape = _propTypes2.default.oneOfType([_propTypes2.d
 
 var warning = function() {};
 
-if (process.env.NODE_ENV !== 'production') {
+if ("production " !== 'production') {
   warning = function(condition, format, args) {
     var len = arguments.length;
     args = new Array(len > 2 ? len - 2 : 0);
@@ -2846,8 +2845,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 
-}).call(this,require('_process'))
-},{"_process":34}],41:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3119,6 +3117,7 @@ var Lightbox = (function (_Component) {
 			var onClickImage = _props2.onClickImage;
 			var showImageCount = _props2.showImageCount;
 			var showThumbnails = _props2.showThumbnails;
+			var onUpdateCaption = _props2.onUpdateCaption;
 
 			if (!images || !images.length) return null;
 
@@ -3155,7 +3154,8 @@ var Lightbox = (function (_Component) {
 					countCurrent: currentImage + 1,
 					countSeparator: imageCountSeparator,
 					countTotal: images.length,
-					showCount: showImageCount
+					showCount: showImageCount,
+					onUpdateCaption: onUpdateCaption
 				})
 			);
 		}
@@ -3218,22 +3218,26 @@ Lightbox.propTypes = {
 	showThumbnails: _propTypes2['default'].bool,
 	theme: _propTypes2['default'].object,
 	thumbnailOffset: _propTypes2['default'].number,
-	width: _propTypes2['default'].number
+	width: _propTypes2['default'].number,
+	onUpdateCaption: _propTypes2['default'].func
 };
 Lightbox.defaultProps = {
 	closeButtonTitle: 'Close (Esc)',
 	currentImage: 0,
 	enableKeyboardInput: true,
 	imageCountSeparator: ' of ',
-	leftArrowTitle: 'Previous (Left arrow key)',
+	leftArrowTitle: 'Previous',
 	onClickShowNextImage: true,
 	preloadNextImage: true,
-	rightArrowTitle: 'Next (Right arrow key)',
+	rightArrowTitle: 'Next',
 	showCloseButton: true,
 	showImageCount: true,
 	theme: {},
 	thumbnailOffset: 2,
-	width: 1024
+	width: 1024,
+	onUpdateCaption: function onUpdateCaption(caption) {
+		return console.log(caption);
+	}
 };
 Lightbox.childContextTypes = {
 	theme: _propTypes2['default'].object.isRequired
@@ -3453,9 +3457,15 @@ module.exports = Container;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _propTypes = require('prop-types');
 
@@ -3473,74 +3483,159 @@ var _theme2 = _interopRequireDefault(_theme);
 
 var _utils = require('../utils');
 
-function Footer(_ref, _ref2) {
-	var caption = _ref.caption;
-	var countCurrent = _ref.countCurrent;
-	var countSeparator = _ref.countSeparator;
-	var countTotal = _ref.countTotal;
-	var showCount = _ref.showCount;
+var Footer = (function (_React$Component) {
+  _inherits(Footer, _React$Component);
 
-	var props = _objectWithoutProperties(_ref, ['caption', 'countCurrent', 'countSeparator', 'countTotal', 'showCount']);
+  function Footer(props, context) {
+    _classCallCheck(this, Footer);
 
-	var theme = _ref2.theme;
+    _get(Object.getPrototypeOf(Footer.prototype), 'constructor', this).call(this, props, context);
+    this.state = {
+      caption: this.props.caption,
+      editing: false
+    };
+    this.saveCaption = this.saveCaption.bind(this);
+  }
 
-	if (!caption && !showCount) return null;
+  _createClass(Footer, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (this.props === nextProps) return;
+      this.setState({
+        editing: false,
+        caption: nextProps.caption
+      });
+    }
+  }, {
+    key: 'saveCaption',
+    value: function saveCaption() {
+      this.props.onUpdateCaption(this.state.caption);
+      this.setState({ editing: false });
+    }
+  }, {
+    key: 'renderCaptionForm',
+    value: function renderCaptionForm(classes) {
+      var _this = this;
 
-	var classes = _aphroditeNoImportant.StyleSheet.create((0, _utils.deepMerge)(defaultStyles, theme));
+      return _react2['default'].createElement(
+        'div',
+        null,
+        _react2['default'].createElement('input', {
+          autoFocus: true,
+          type: 'text',
+          value: this.state.caption,
+          onChange: function (e) {
+            return _this.setState({ caption: e.target.value });
+          }
+        }),
+        _react2['default'].createElement(
+          'span',
+          null,
+          _react2['default'].createElement(
+            'button',
+            { onClick: this.saveCaption },
+            'Save'
+          ),
+          _react2['default'].createElement(
+            'button',
+            { onClick: function () {
+                return _this.setState({ editing: false });
+              } },
+            'Cancel'
+          )
+        )
+      );
+    }
+  }, {
+    key: 'renderImageCount',
+    value: function renderImageCount(classes) {
+      var _props = this.props;
+      var showCount = _props.showCount;
+      var countCurrent = _props.countCurrent;
+      var countSeparator = _props.countSeparator;
+      var countTotal = _props.countTotal;
 
-	var imageCount = showCount ? _react2['default'].createElement(
-		'div',
-		{ className: (0, _aphroditeNoImportant.css)(classes.footerCount) },
-		countCurrent,
-		countSeparator,
-		countTotal
-	) : _react2['default'].createElement('span', null);
+      return showCount ? _react2['default'].createElement(
+        'div',
+        { className: (0, _aphroditeNoImportant.css)(classes.footerCount) },
+        countCurrent,
+        countSeparator,
+        countTotal
+      ) : _react2['default'].createElement('span', null);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
 
-	return _react2['default'].createElement(
-		'div',
-		_extends({ className: (0, _aphroditeNoImportant.css)(classes.footer) }, props),
-		caption ? _react2['default'].createElement(
-			'figcaption',
-			{ className: (0, _aphroditeNoImportant.css)(classes.footerCaption) },
-			caption
-		) : _react2['default'].createElement('span', null),
-		imageCount
-	);
-}
+      var _props2 = this.props;
+      var caption = _props2.caption;
+      var showCount = _props2.showCount;
+
+      if (!caption && !showCount) return null;
+
+      var classes = _aphroditeNoImportant.StyleSheet.create((0, _utils.deepMerge)(defaultStyles, this.context.theme));
+
+      return _react2['default'].createElement(
+        'div',
+        _extends({ className: (0, _aphroditeNoImportant.css)(classes.footer) }, this.props),
+        caption ? _react2['default'].createElement(
+          'figcaption',
+          { className: (0, _aphroditeNoImportant.css)(classes.footerCaption) },
+          !this.state.editing ? _react2['default'].createElement(
+            'div',
+            null,
+            caption,
+            _react2['default'].createElement(
+              'button',
+              { onClick: function () {
+                  return _this2.setState({ editing: true });
+                } },
+              'Edit'
+            )
+          ) : this.renderCaptionForm(classes)
+        ) : _react2['default'].createElement('span', null),
+        this.renderImageCount(classes)
+      );
+    }
+  }]);
+
+  return Footer;
+})(_react2['default'].Component);
 
 Footer.propTypes = {
-	caption: _propTypes2['default'].oneOfType([_propTypes2['default'].string, _propTypes2['default'].element]),
-	countCurrent: _propTypes2['default'].number,
-	countSeparator: _propTypes2['default'].string,
-	countTotal: _propTypes2['default'].number,
-	showCount: _propTypes2['default'].bool
+  caption: _propTypes2['default'].oneOfType([_propTypes2['default'].string, _propTypes2['default'].element]),
+  countCurrent: _propTypes2['default'].number,
+  countSeparator: _propTypes2['default'].string,
+  countTotal: _propTypes2['default'].number,
+  showCount: _propTypes2['default'].bool
 };
 Footer.contextTypes = {
-	theme: _propTypes2['default'].object.isRequired
+  theme: _propTypes2['default'].object.isRequired
 };
 
 var defaultStyles = {
-	footer: {
-		boxSizing: 'border-box',
-		color: _theme2['default'].footer.color,
-		cursor: 'auto',
-		display: 'flex',
-		justifyContent: 'space-between',
-		left: 0,
-		lineHeight: 1.3,
-		paddingBottom: _theme2['default'].footer.gutter.vertical,
-		paddingLeft: _theme2['default'].footer.gutter.horizontal,
-		paddingRight: _theme2['default'].footer.gutter.horizontal,
-		paddingTop: _theme2['default'].footer.gutter.vertical
-	},
-	footerCount: {
-		color: _theme2['default'].footer.count.color,
-		fontSize: _theme2['default'].footer.count.fontSize,
-		paddingLeft: '1em' },
-	// add a small gutter for the caption
-	footerCaption: {
-		flex: '1 1 0'
-	}
+  footer: {
+    boxSizing: 'border-box',
+    color: _theme2['default'].footer.color,
+    cursor: 'auto',
+    display: 'flex',
+    justifyContent: 'space-between',
+    left: 0,
+    lineHeight: 1.3,
+    paddingBottom: _theme2['default'].footer.gutter.vertical,
+    paddingLeft: _theme2['default'].footer.gutter.horizontal,
+    paddingRight: _theme2['default'].footer.gutter.horizontal,
+    paddingTop: _theme2['default'].footer.gutter.vertical
+  },
+  footerCount: {
+    color: _theme2['default'].footer.count.color,
+    fontSize: _theme2['default'].footer.count.fontSize,
+    paddingLeft: '1em' },
+  // add a small gutter for the caption
+  footerCaption: {
+    flex: '1 1 0'
+  }
 };
 
 module.exports = Footer;
@@ -3872,7 +3967,7 @@ var PaginatedThumbnails = (function (_Component) {
 				icon: 'arrowRight',
 				onClick: this.gotoNext,
 				style: arrowStyles,
-				title: 'Previous (Right arrow key)',
+				title: 'Next (Right arrow key)',
 				type: 'button'
 			});
 		}
