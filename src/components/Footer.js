@@ -64,17 +64,15 @@ class Footer extends React.Component {
 
     return (
       <div className={css(classes.footer)} {...this.props}>
-        {caption ? (
-          <figcaption className={css(classes.footerCaption)}>
-            { (!this.state.editing) ?
-              (<div>
-                {caption}
-                <button onClick={() => this.setState({ editing: true })}>Edit</button>
-              </div>) :
-              this.renderCaptionForm(classes)
-            }
-          </figcaption>
-        ) : <span />}
+        <figcaption className={css(classes.footerCaption)}>
+          {this.state.editing ?
+            this.renderCaptionForm(classes) :
+            <div>
+              {caption}
+              <button onClick={() => this.setState({ editing: true })}>Edit</button>
+            </div>
+          }
+        </figcaption>
         {this.renderImageCount(classes)}
       </div>
   	);

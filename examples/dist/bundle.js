@@ -3148,10 +3148,10 @@ var Footer = (function (_React$Component) {
       return _react2['default'].createElement(
         'div',
         _extends({ className: (0, _aphroditeNoImportant.css)(classes.footer) }, this.props),
-        caption ? _react2['default'].createElement(
+        _react2['default'].createElement(
           'figcaption',
           { className: (0, _aphroditeNoImportant.css)(classes.footerCaption) },
-          !this.state.editing ? _react2['default'].createElement(
+          this.state.editing ? this.renderCaptionForm(classes) : _react2['default'].createElement(
             'div',
             null,
             caption,
@@ -3162,8 +3162,8 @@ var Footer = (function (_React$Component) {
                 } },
               'Edit'
             )
-          ) : this.renderCaptionForm(classes)
-        ) : _react2['default'].createElement('span', null),
+          )
+        ),
         this.renderImageCount(classes)
       );
     }
@@ -4323,6 +4323,8 @@ var Lightbox = (function (_Component) {
 					countSeparator: imageCountSeparator,
 					countTotal: images.length,
 					showCount: showImageCount,
+					// hack: exclude footer from backdrop area
+					onClick: function () {},
 					onUpdateCaption: onUpdateCaption
 				})
 			);

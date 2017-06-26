@@ -244,6 +244,8 @@ class Lightbox extends Component {
 					countSeparator={imageCountSeparator}
 					countTotal={images.length}
 					showCount={showImageCount}
+					// hack: exclude footer from backdrop area
+					onClick={() => {}}
 					onUpdateCaption={onUpdateCaption}
 				/>
 			</figure>
